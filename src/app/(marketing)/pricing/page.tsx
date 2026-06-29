@@ -67,19 +67,16 @@ export default function PricingPage() {
 
           <div className="p-8">
             <div className="text-center mb-6">
-              <p className="text-sm text-zinc-400 dark:text-zinc-600 line-through mb-1">
-                De R$ 197
-              </p>
               <div className="flex items-baseline justify-center gap-1">
                 <span className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">R$</span>
-                <span className="text-6xl font-bold text-zinc-900 dark:text-zinc-100">29,99</span>
+                <span className="text-6xl font-bold text-zinc-900 dark:text-zinc-100">79,90</span>
               </div>
               <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">pagamento único — acesso vitalício</p>
             </div>
 
             <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900 px-4 py-3 mb-6 text-center">
               <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
-                Menos de R$ 3 por módulo
+                Menos de R$ 8 por módulo
               </p>
             </div>
 

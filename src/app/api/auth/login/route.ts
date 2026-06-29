@@ -4,10 +4,11 @@ import { encode } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 function setSessionCookie(response: NextResponse, token: string) {
-  response.cookies.set("authjs.session-token", token, {
+  const isSecure = process.env.NODE_ENV === "production";
+  response.cookies.set(isSecure ? "__Secure-authjs.session-token" : "authjs.session-token", token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: false,
+    secure: isSecure,
     path: "/",
     maxAge: 60 * 60 * 24 * 30,
   });

@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   const order = await prisma.order.create({
     data: {
       userId: session.user.id,
-      amount: 79.90,
+      amount: 24.99,
       plan: "lifetime",
       status: "pending",
     },

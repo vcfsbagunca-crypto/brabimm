@@ -382,7 +382,7 @@ export default function DashboardPage() {
                 Desbloqueie todos os 10 módulos da Jornada de Cura Emocional com acesso vitalício.
               </p>
               <p className="text-2xl font-bold text-emerald-600 mb-6">
-                R$ 79,90
+                R$ 24,99
                 <span className="text-sm font-normal text-zinc-400 dark:text-zinc-500"> única</span>
               </p>
               <button

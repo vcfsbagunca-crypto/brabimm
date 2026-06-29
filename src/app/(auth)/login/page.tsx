@@ -66,7 +66,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form onSubmit={onSubmit} method="POST" action="/api/auth/login" className="mt-8 space-y-5">
+          <form onSubmit={onSubmit} className="mt-8 space-y-5">
             {registered && (
               <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900 p-3.5 text-sm text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
                 <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

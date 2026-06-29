@@ -9,31 +9,53 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const orderId = body.order_id || body.external_reference;
-    const status = body.status?.toLowerCase();
+    const event = body.event as string;
+    const saleId = body.sale_id as string;
+    const email = body.customer?.email as string;
 
-    if (!orderId || !status) {
+    if (!event || !saleId) {
       return NextResponse.json({ error: "Dados incompletos" }, { status: 400 });
     }
 
-    const order = await prisma.order.findUnique({ where: { id: orderId } });
-    if (!order) {
-      return NextResponse.json({ error: "Pedido não encontrado" }, { status: 404 });
-    }
+    if (event === "sale.paid") {
+      if (!email) {
+        return NextResponse.json({ error: "Email do comprador obrigatório" }, { status: 400 });
+      }
 
-    if (status === "approved" || status === "completed" || status === "paid") {
-      await prisma.order.update({
-        where: { id: orderId },
-        data: { status: "paid", lowifyId: body.id?.toString() || null },
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user) {
+        return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 });
+      }
+
+      const existing = await prisma.order.findFirst({
+        where: { lowifyId: saleId },
+      });
+      if (existing) {
+        return NextResponse.json({ received: true, alreadyProcessed: true });
+      }
+
+      await prisma.order.create({
+        data: {
+          userId: user.id,
+          amount: 24.99,
+          plan: "lifetime",
+          status: "paid",
+          lowifyId: saleId,
+        },
       });
 
-      const user = await prisma.user.findUnique({ where: { id: order.userId } });
-      console.log(`💵 Venda aprovada! ${user?.email || order.userId} — R$ ${order.amount}`);
-    } else if (status === "refunded" || status === "cancelled" || status === "rejected") {
-      await prisma.order.update({
-        where: { id: orderId },
-        data: { status: "cancelled" },
+      console.log(`💵 Venda aprovada! ${email} — R$ 24,99 (sale: ${saleId})`);
+    } else if (event === "sale.refund") {
+      const order = await prisma.order.findFirst({
+        where: { lowifyId: saleId },
       });
+      if (order) {
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { status: "cancelled" },
+        });
+        console.log(`↩️ Reembolso: ${saleId}`);
+      }
     }
 
     return NextResponse.json({ received: true });

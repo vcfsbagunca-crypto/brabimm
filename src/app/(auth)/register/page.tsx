@@ -53,11 +53,7 @@ export default function RegisterPage() {
         <div className="rounded-2xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/20 dark:border-zinc-800/50 shadow-xl shadow-black/5 dark:shadow-black/20 p-8">
           <div className="text-center">
             <Link href="/" className="inline-flex items-center gap-2 mb-6">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-teal-600 shadow-lg shadow-emerald-200">
-                <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </span>
+              <img src="/logo.png" alt="Cura Emocional" className="h-10 w-auto mx-auto mb-6" />
             </Link>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Criar Conta</h1>
             <p className="mt-1.5 text-zinc-500 dark:text-zinc-400">

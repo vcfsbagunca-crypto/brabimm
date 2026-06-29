@@ -46,11 +46,9 @@ export default function PricingPage() {
 
       <div className="relative w-full max-w-lg animate-fade-in-up">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-emerald-600 transition-colors mb-6">
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            Voltar para o início
+          <Link href="/" className="inline-flex items-center justify-center gap-2 mb-6">
+            <img src="/logo.png" alt="Cura Emocional" className="h-8 w-auto" />
+            <span className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Cura Emocional</span>
           </Link>
           <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Invista na Sua Saúde Emocional</h1>
           <p className="mt-2 text-zinc-500 dark:text-zinc-400 max-w-md mx-auto">

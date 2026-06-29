@@ -3,6 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
+    const secret = req.headers.get("x-webhook-secret");
+    if (secret && secret !== process.env.LOWIFY_WEBHOOK_SECRET) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
+
     const body = await req.json();
     const orderId = body.order_id || body.external_reference;
     const status = body.status?.toLowerCase();
@@ -21,6 +26,9 @@ export async function POST(req: NextRequest) {
         where: { id: orderId },
         data: { status: "paid", lowifyId: body.id?.toString() || null },
       });
+
+      const user = await prisma.user.findUnique({ where: { id: order.userId } });
+      console.log(`💵 Venda aprovada! ${user?.email || order.userId} — R$ ${order.amount}`);
     } else if (status === "refunded" || status === "cancelled" || status === "rejected") {
       await prisma.order.update({
         where: { id: orderId },

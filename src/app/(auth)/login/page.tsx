@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
   const [error, setError] = useState("");
@@ -24,17 +25,16 @@ export default function LoginPage() {
     const password = form.get("password") as string;
 
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
 
-      if (res.ok) {
+      if (res?.ok) {
         window.location.href = "/dashboard";
       } else {
-        const data = await res.json().catch(() => null);
-        setError(data?.error || "Email ou senha inválidos");
+        setError(res?.error || "Email ou senha inválidos");
       }
     } catch {
       setError("Erro de conexão");

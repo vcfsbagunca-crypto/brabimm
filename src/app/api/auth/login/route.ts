@@ -3,17 +3,6 @@ import { compare } from "bcryptjs";
 import { encode } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
-function setSessionCookie(response: NextResponse, token: string) {
-  const isSecure = process.env.NODE_ENV === "production";
-  response.cookies.set(isSecure ? "__Secure-authjs.session-token" : "authjs.session-token", token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: isSecure,
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
-  });
-}
-
 export async function POST(req: NextRequest) {
   try {
     const ct = req.headers.get("content-type") || "";
@@ -55,6 +44,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email ou senha inválidos" }, { status: 401 });
     }
 
+    const cookieName = process.env.NODE_ENV === "production"
+      ? "__Secure-authjs.session-token"
+      : "authjs.session-token";
+
     const token = await encode({
       token: {
         sub: user.id,
@@ -63,18 +56,30 @@ export async function POST(req: NextRequest) {
         picture: user.image,
       },
       secret: process.env.AUTH_SECRET!,
-      salt: "authjs.session-token",
+      salt: cookieName,
       maxAge: 30 * 24 * 60 * 60,
     });
 
     if (isForm) {
       const response = NextResponse.redirect(new URL("/dashboard", req.url));
-      setSessionCookie(response, token);
+      response.cookies.set(cookieName, token, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+      });
       return response;
     }
 
     const response = NextResponse.json({ redirectTo: "/dashboard" });
-    setSessionCookie(response, token);
+    response.cookies.set(cookieName, token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
     return response;
   } catch {
     if (req.headers.get("content-type")?.includes("application/x-www-form-urlencoded")) {

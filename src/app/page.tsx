@@ -10,54 +10,53 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.2 },
+    transition: { staggerChildren: 0.1, delayChildren: 0.15 },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 40, scale: 0.95 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
-    scale: 1,
-    transition: { type: "spring" as const, stiffness: 100, damping: 15 },
+    transition: { duration: 0.5, ease: "easeOut" },
   },
 };
 
 function DecorativeBlob({ className, delay = 0 }: { className: string; delay?: number }) {
   return (
     <motion.div
-      className={`absolute rounded-full mix-blend-multiply filter blur-2xl opacity-10 ${className}`}
-      animate={{ 
-        x: [0, 50, -30, 0], 
-        y: [0, -60, 30, 0], 
-        scale: [1, 1.2, 0.8, 1],
-        opacity: [0.1, 0.2, 0.1, 0.1]
+      className={`absolute rounded-full mix-blend-multiply filter blur-3xl ${className}`}
+      animate={{
+        x: [0, 40, -20, 0],
+        y: [0, -50, 25, 0],
+        scale: [1, 1.15, 0.9, 1],
+        opacity: [0.08, 0.15, 0.08, 0.08],
       }}
-      transition={{ 
-        repeat: Infinity, 
+      transition={{
+        repeat: Infinity,
         repeatType: "reverse",
-        duration: 25 + delay, 
+        duration: 20 + delay * 3,
         ease: "easeInOut",
-        delay
+        delay,
       }}
     />
   );
 }
 
-function FloatingShape({ className, delay = 0 }: { className: string; delay?: number }) {
+function FloatingDot({ className, delay = 0 }: { className: string; delay?: number }) {
   return (
     <motion.div
       className={`absolute ${className}`}
-      initial={{ opacity: 0, y: 20, scale: 0.8 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ delay, duration: 1, ease: "easeOut" }}
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay, duration: 0.8, ease: "backOut" }}
     >
-      <div 
-        className="h-full w-full rounded-full bg-gradient-to-br from-emerald-200/20 via-teal-200/20 to-purple-200/20 backdrop-blur-sm border border-emerald-200/10"
+      <div
+        className="h-full w-full rounded-full bg-gradient-to-br from-emerald-300/30 to-teal-300/30 border border-emerald-200/20"
         style={
           {
-            animation: `float-depth ${8 + delay * 2}s ease-in-out infinite`,
+            animation: `float-depth ${10 + delay * 2}s ease-in-out infinite`,
             animationDelay: `${delay}s`,
           } as React.CSSProperties
         }
@@ -72,9 +71,9 @@ function TypewriterText({ text, className }: { text: string; className?: string 
       {text.split("").map((char, i) => (
         <motion.span
           key={i}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.03, type: "spring", stiffness: 200 }}
+          transition={{ delay: 0.4 + i * 0.035, type: "spring", stiffness: 180, damping: 12 }}
           className="inline-block"
         >
           {char === " " ? "\u00A0" : char}
@@ -91,115 +90,121 @@ export default function LandingPage() {
     target: heroRef,
     offset: ["start start", "end start"],
   });
-  const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.3]);
-  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 80]);
 
   return (
     <div className="flex flex-col">
+      {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50">
-        <div className="absolute inset-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-b border-zinc-100 dark:border-zinc-800" />
-        <div className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link href="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="Cura Emocional" className="h-8 w-auto" />
+        <div className="absolute inset-0 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl border-b border-white/20 dark:border-white/5" />
+        <div className="relative mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
+          <Link href="/" className="flex items-center gap-2.5">
+            <img src="/logo.png" alt="Cura Emocional" className="h-9 w-auto" />
             <span className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               Cura Emocional
             </span>
           </Link>
-          <nav className="flex items-center gap-2">
+          <nav className="flex items-center gap-2.5">
             <ThemeToggle />
             <Link
               href="/login"
-              className="relative inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200"
+              className="inline-flex items-center rounded-xl px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200"
             >
               Entrar
             </Link>
             <Link
               href="/register"
-              className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-200/50 hover:shadow-xl hover:shadow-emerald-300/50 hover:from-emerald-400 hover:to-teal-400 transition-all duration-300 overflow-hidden"
+              className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/30 hover:from-emerald-400 hover:to-teal-400 transition-all duration-300"
             >
-              <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="relative flex items-center gap-2">
-                Começar Agora
-                <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
+              Começar Agora
+              <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             </Link>
           </nav>
         </div>
       </header>
 
+      {/* Hero */}
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <DecorativeBlob className="top-20 left-10 w-96 h-96 bg-emerald-200" delay={0.0} />
-        <DecorativeBlob className="top-40 right-20 w-[30rem] h-[30rem] bg-teal-200" delay={0.8} />
-        <DecorativeBlob className="bottom-20 left-1/3 w-80 h-80 bg-purple-200" delay={1.2} />
-        <DecorativeBlob className="top-60 left-1/4 w-64 h-64 bg-cyan-200" delay={1.5} />
-        <DecorativeBlob className="bottom-40 right-1/4 w-48 h-48 bg-pink-200" delay={2.0} />
+        {/* Gradient de fundo suave */}
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/80 via-white to-white dark:from-emerald-950/20 dark:via-zinc-900 dark:to-zinc-900" />
 
-        <FloatingShape className="top-32 left-[15%] w-20 h-20" delay={0.2} />
-        <FloatingShape className="top-48 right-[20%] w-16 h-16" delay={0.7} />
-        <FloatingShape className="bottom-40 left-[25%] w-24 h-24" delay={1.2} />
-        <FloatingShape className="bottom-32 right-[15%] w-14 h-14" delay={0.5} />
-        <FloatingShape className="top-64 left-[45%] w-18 h-18" delay={1.8} />
-        <FloatingShape className="top-80 right-[10%] w-12 h-12" delay={2.3} />
+        {/* Blobs decorativos */}
+        <DecorativeBlob className="top-16 left-[5%] w-[28rem] h-[28rem] bg-emerald-200" delay={0} />
+        <DecorativeBlob className="top-32 right-[8%] w-[24rem] h-[24rem] bg-teal-200" delay={1} />
+        <DecorativeBlob className="bottom-24 left-[20%] w-[20rem] h-[20rem] bg-purple-200" delay={2} />
+        <DecorativeBlob className="top-1/2 right-[25%] w-[16rem] h-[16rem] bg-cyan-200" delay={3} />
 
-        <motion.div style={{ opacity: heroOpacity, scale: heroScale }} className="relative z-10 mx-auto max-w-4xl px-4 text-center">
+        {/* Pontos flutuantes */}
+        <FloatingDot className="top-[20%] left-[12%] w-3 h-3" delay={0.2} />
+        <FloatingDot className="top-[30%] right-[18%] w-2 h-2" delay={0.6} />
+        <FloatingDot className="bottom-[30%] left-[22%] w-4 h-4" delay={1.0} />
+        <FloatingDot className="top-[60%] right-[12%] w-2.5 h-2.5" delay={1.4} />
+        <FloatingDot className="top-[15%] right-[35%] w-2 h-2" delay={1.8} />
+        <FloatingDot className="bottom-[20%] left-[40%] w-3 h-3" delay={2.2} />
+        <FloatingDot className="top-[45%] left-[8%] w-2 h-2" delay={2.6} />
+
+        <motion.div
+          style={{ opacity: heroOpacity, y: heroY }}
+          className="relative z-10 mx-auto max-w-4xl px-5 text-center"
+        >
+          {/* Badge animado */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-6"
+            initial={{ opacity: 0, y: 15, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="mb-8"
           >
-            <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-1.5 text-sm font-medium text-emerald-700 border border-emerald-200/50 shadow-sm">
-              <motion.span 
-              className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse-glow" 
-              animate={{ scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-            />
-              <motion.span
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-              >Sua jornada de autocuidado começa aqui</motion.span>
+            <span className="inline-flex items-center gap-2.5 rounded-full bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm px-5 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50 shadow-sm">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+              </span>
+              Sua jornada de autocuidado começa aqui
             </span>
           </motion.div>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
-            <TypewriterText text="Sua Jornada de" className="text-zinc-900 dark:text-zinc-100" />
+          {/* Título principal */}
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1]">
+            <TypewriterText text="Sua Jornada de" className="text-zinc-900 dark:text-zinc-50" />
             <br />
             <span className="bg-gradient-to-r from-emerald-500 via-teal-500 to-purple-500 bg-clip-text text-transparent">
               <TypewriterText text="Cura Emocional" />
             </span>
           </h1>
 
+          {/* Subtítulo */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-            className="mx-auto mt-6 max-w-2xl text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed"
+            transition={{ delay: 1.4, duration: 0.6 }}
+            className="mx-auto mt-7 max-w-2xl text-lg sm:text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed"
           >
             Um guia interativo com 10 passos práticos para ajudar você a entender,
-            processar e superar experiências traumáticas. No seu ritmo, no seu tempo.
+            processar e superar experiências traumáticas. <span className="text-emerald-600 dark:text-emerald-400 font-medium">No seu ritmo, no seu tempo.</span>
           </motion.p>
 
+          {/* CTAs */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.6 }}
+            transition={{ delay: 1.7, duration: 0.6 }}
             className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
               href="/register"
-              className="group relative inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-emerald-200/50 hover:shadow-2xl hover:shadow-emerald-300/50 hover:from-emerald-400 hover:to-teal-400 transition-all duration-300 active:scale-[0.98]"
+              className="group relative inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-9 py-4 text-base font-semibold text-white shadow-xl shadow-emerald-500/25 hover:shadow-2xl hover:shadow-emerald-500/30 hover:from-emerald-400 hover:to-teal-400 transition-all duration-300 active:scale-[0.97]"
             >
-              <span>Começar Gratuitamente</span>
+              Começar Gratuitamente
               <svg className="h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </Link>
             <Link
               href="#modulos"
-              className="inline-flex items-center gap-2 rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm px-8 py-4 text-base font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 hover:shadow-lg transition-all duration-300"
+              className="inline-flex items-center gap-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-800/60 backdrop-blur-sm px-9 py-4 text-base font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 hover:shadow-lg transition-all duration-300"
             >
               <svg className="h-5 w-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -208,26 +213,27 @@ export default function LandingPage() {
             </Link>
           </motion.div>
 
+          {/* Trust badges */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 2, duration: 1 }}
-            className="mt-16 flex items-center justify-center gap-8 text-sm text-zinc-400 dark:text-zinc-500"
+            transition={{ delay: 2.2, duration: 0.8 }}
+            className="mt-16 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-zinc-400 dark:text-zinc-500"
           >
-            <span className="flex items-center gap-1.5">
-              <svg className="h-4 w-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <span className="flex items-center gap-2">
+              <svg className="h-4.5 w-4.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Conteúdo validado
             </span>
-            <span className="flex items-center gap-1.5">
-              <svg className="h-4 w-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <span className="flex items-center gap-2">
+              <svg className="h-4.5 w-4.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               No seu ritmo
             </span>
-            <span className="flex items-center gap-1.5">
-              <svg className="h-4 w-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <span className="flex items-center gap-2">
+              <svg className="h-4.5 w-4.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
               100% gratuito
@@ -235,33 +241,32 @@ export default function LandingPage() {
           </motion.div>
         </motion.div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-zinc-50 dark:from-zinc-950 to-transparent pointer-events-none" />
+        {/* Fade out inferior */}
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white dark:from-zinc-900 to-transparent pointer-events-none" />
       </section>
 
+      {/* Módulos */}
       <section id="modulos" ref={modulesRef} className="relative py-28">
-        <div className="absolute inset-0 bg-gradient-to-b from-zinc-50 via-white to-zinc-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950" />
-        <DecorativeBlob className="top-40 left-0 w-72 h-72 bg-emerald-200/40" />
-        <DecorativeBlob className="bottom-40 right-0 w-96 h-96 bg-purple-200/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-emerald-50/30 to-white dark:from-zinc-900 dark:via-emerald-950/10 dark:to-zinc-900" />
+        <DecorativeBlob className="top-40 left-0 w-72 h-72 bg-emerald-200/30" />
+        <DecorativeBlob className="bottom-40 right-0 w-96 h-96 bg-purple-200/20" />
 
-        <div className="relative z-10 mx-auto max-w-6xl px-4">
+        <div className="relative z-10 mx-auto max-w-6xl px-5">
+          {/* Título da seção */}
           <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.9 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ 
-              duration: 0.8, 
-              ease: "easeOut",
-              staggerChildren: 0.1
-            }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7 }}
             className="text-center mb-16"
           >
-            <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-1.5 text-sm font-medium text-emerald-700 border border-emerald-200/50 mb-4">
+            <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-emerald-700 dark:text-emerald-300 mb-4">
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
               Os 10 Passos
             </span>
-            <h2 className="text-4xl sm:text-5xl font-bold text-zinc-900 dark:text-zinc-100 mt-3">
+            <h2 className="text-4xl sm:text-5xl font-extrabold text-zinc-900 dark:text-zinc-50">
               Sua Jornada em{" "}
               <span className="bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">
                 10 Módulos
@@ -272,11 +277,12 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
+          {/* Grid de módulos */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin: "-40px" }}
             className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
           >
             {modulesData.map((mod, index) => {
@@ -292,34 +298,41 @@ export default function LandingPage() {
                 "from-teal-500 to-emerald-500",
                 "from-pink-500 to-rose-500",
               ];
+              const shadows = [
+                "shadow-emerald-500/20",
+                "shadow-teal-500/20",
+                "shadow-purple-500/20",
+                "shadow-amber-500/20",
+                "shadow-rose-500/20",
+                "shadow-sky-500/20",
+                "shadow-emerald-500/20",
+                "shadow-violet-500/20",
+                "shadow-teal-500/20",
+                "shadow-pink-500/20",
+              ];
               const grad = colors[index % colors.length];
+              const shadow = shadows[index % shadows.length];
               return (
-                <motion.div
-                  key={mod.id}
-                  variants={itemVariants}
-                  className="group relative"
-                >
-                  <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-emerald-200/0 via-transparent to-purple-200/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" />
-                  <div
-                    className={`relative rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-7 card-hover card-glow`}
-                  >
-                    <div className={`inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${grad} shadow-lg`}>
+                <motion.div key={mod.id} variants={itemVariants} className="group relative">
+                  <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-emerald-200/0 via-transparent to-purple-200/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" />
+                  <div className="relative rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-7 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl group-hover:shadow-zinc-200/50 dark:group-hover:shadow-zinc-900/50 group-hover:border-zinc-200 dark:group-hover:border-zinc-700">
+                    <div className={`inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${grad} shadow-lg ${shadow} group-hover:scale-110 transition-transform duration-300`}>
                       <span className="text-2xl">{mod.icon}</span>
                     </div>
                     <div className="mt-5">
-                      <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500">
                         Módulo {String(mod.order).padStart(2, "0")}
                       </span>
-                      <h3 className="mt-1 text-lg font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-700 transition-colors">
+                      <h3 className="mt-1.5 text-lg font-bold text-zinc-900 dark:text-zinc-50 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                         {mod.title}
                       </h3>
                       <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
                         {mod.description}
                       </p>
                     </div>
-                    <div className="mt-5 flex items-center gap-1.5 text-xs font-medium text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="mt-5 flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1">
                       <span>Acessar módulo</span>
-                      <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
@@ -331,90 +344,57 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="relative py-24 overflow-hidden">
+      {/* CTA final */}
+      <section className="relative py-28 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700">
           <div className="absolute inset-0">
             <motion.div
-              className="absolute top-10 left-10 w-40 h-40 rounded-full bg-white/10 backdrop-blur-sm"
-              animate={{ 
-                y: [0, -20, 0], 
-                scale: [1, 1.1, 1],
-                opacity: [0.1, 0.2, 0.1]
-              }}
+              className="absolute top-10 left-10 w-48 h-48 rounded-full bg-white/10 backdrop-blur-sm"
+              animate={{ y: [0, -20, 0], scale: [1, 1.1, 1], opacity: [0.1, 0.2, 0.1] }}
               transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
             />
             <motion.div
-              className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-white/10 backdrop-blur-sm"
-              animate={{ 
-                y: [0, 30, 0], 
-                scale: [1, 0.9, 1],
-                opacity: [0.1, 0.15, 0.1]
-              }}
+              className="absolute bottom-10 right-10 w-64 h-64 rounded-full bg-white/10 backdrop-blur-sm"
+              animate={{ y: [0, 30, 0], scale: [1, 0.9, 1], opacity: [0.1, 0.15, 0.1] }}
               transition={{ repeat: Infinity, duration: 10, ease: "easeInOut", delay: 2 }}
             />
             <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-white/5 backdrop-blur-sm"
-              animate={{ 
-                scale: [1, 1.2, 1],
-                rotate: [0, 180, 360],
-                opacity: [0.05, 0.15, 0.05]
-              }}
-              transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-white/5"
+              animate={{ scale: [1, 1.3, 1], rotate: [0, 180, 360], opacity: [0.03, 0.1, 0.03] }}
+              transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
             />
           </div>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 60, scale: 0.8 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ 
-            duration: 1, 
-            ease: [0.4, 0, 0.2, 1],
-            staggerChildren: 0.1
-          }}
-          className="relative z-10 mx-auto max-w-3xl px-4 text-center"
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="relative z-10 mx-auto max-w-3xl px-5 text-center"
         >
-          <motion.h2 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="text-4xl sm:text-5xl font-bold text-white"
-          >
+          <h2 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight">
             Pronto para começar?
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.7, ease: "easeOut" }}
-            className="mt-4 text-lg text-emerald-100/80 max-w-xl mx-auto"
-          >
+          </h2>
+          <p className="mt-5 text-lg text-emerald-100/80 max-w-xl mx-auto leading-relaxed">
             Cadastre-se grátis e acesse todos os módulos, diário emocional e
             acompanhamento de progresso.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4, duration: 0.5, ease: "easeOut" }}
+          </p>
+          <Link
+            href="/register"
+            className="group mt-10 inline-flex items-center gap-2.5 rounded-2xl bg-white px-9 py-4 text-base font-bold text-emerald-700 shadow-xl shadow-black/10 hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300"
           >
-            <Link
-              href="/register"
-              className="group mt-10 inline-flex items-center gap-2 rounded-2xl bg-white px-8 py-4 text-base font-semibold text-emerald-700 shadow-xl hover:shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300"
-            >
-              <span>Criar Conta Gratuita</span>
-              <svg className="h-5 w-5 transition-all group-hover:translate-x-1 group-hover:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </Link>
-          </motion.div>
+            Criar Conta Gratuita
+            <svg className="h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
         </motion.div>
       </section>
 
+      {/* Footer */}
       <footer className="border-t border-zinc-100 dark:border-zinc-800 py-8">
-        <div className="mx-auto max-w-6xl px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mx-auto max-w-6xl px-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-zinc-400 dark:text-zinc-500">
             Cura Emocional — Um guia de apoio. Não substitui acompanhamento profissional.
           </p>

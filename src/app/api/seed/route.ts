@@ -1,9 +1,20 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { modulesData } from "@/lib/modules-data";
 
 export async function GET() {
+  if (process.env.NODE_ENV !== "development") {
+    return NextResponse.json({ error: "Não permitido" }, { status: 403 });
+  }
+
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
+
   try {
+    const { modulesData } = await import("@/lib/modules-data");
+
     for (const mod of modulesData) {
       await prisma.module.upsert({
         where: { slug: mod.slug },
@@ -27,8 +38,7 @@ export async function GET() {
     }
 
     return NextResponse.json({ success: true, count: modulesData.length });
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : "Erro ao popular dados";
-    return NextResponse.json({ message: msg }, { status: 500 });
+  } catch {
+    return NextResponse.json({ message: "Erro ao popular dados" }, { status: 500 });
   }
 }

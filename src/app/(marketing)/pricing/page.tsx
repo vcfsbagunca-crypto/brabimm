@@ -115,7 +115,7 @@ export default function PricingPage() {
             </button>
 
             <p className="mt-4 text-center text-xs text-zinc-400 dark:text-zinc-500">
-              Pagamento 100% seguro via Lowify
+              Pagamento 100% seguro via Kiwify
             </p>
           </div>
         </div>

@@ -24,10 +24,23 @@ const itemVariants = {
   },
 };
 
-function DecorativeBlob({ className }: { className: string }) {
+function DecorativeBlob({ className, delay = 0 }: { className: string; delay?: number }) {
   return (
-    <div
-      className={`absolute rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob ${className}`}
+    <motion.div
+      className={`absolute rounded-full mix-blend-multiply filter blur-2xl opacity-10 ${className}`}
+      animate={{ 
+        x: [0, 50, -30, 0], 
+        y: [0, -60, 30, 0], 
+        scale: [1, 1.2, 0.8, 1],
+        opacity: [0.1, 0.2, 0.1, 0.1]
+      }}
+      transition={{ 
+        repeat: Infinity, 
+        repeatType: "reverse",
+        duration: 25 + delay, 
+        ease: "easeInOut",
+        delay
+      }}
     />
   );
 }
@@ -36,15 +49,19 @@ function FloatingShape({ className, delay = 0 }: { className: string; delay?: nu
   return (
     <motion.div
       className={`absolute ${className}`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20, scale: 0.8 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ delay, duration: 1, ease: "easeOut" }}
-      style={{
-        animation: `float-slow ${6 + delay}s ease-in-out infinite`,
-        animationDelay: `${delay}s`,
-      }}
     >
-      <div className="h-full w-full rounded-full bg-gradient-to-br from-emerald-200/30 to-teal-200/30 backdrop-blur-sm border border-emerald-200/20" />
+      <div 
+        className="h-full w-full rounded-full bg-gradient-to-br from-emerald-200/20 via-teal-200/20 to-purple-200/20 backdrop-blur-sm border border-emerald-200/10"
+        style={
+          {
+            animation: `float-depth ${8 + delay * 2}s ease-in-out infinite`,
+            animationDelay: `${delay}s`,
+          } as React.CSSProperties
+        }
+      />
     </motion.div>
   );
 }
@@ -113,14 +130,18 @@ export default function LandingPage() {
       </header>
 
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <DecorativeBlob className="top-20 left-10 w-96 h-96 bg-emerald-300" />
-        <DecorativeBlob className="top-40 right-20 w-[30rem] h-[30rem] bg-teal-300" />
-        <DecorativeBlob className="bottom-20 left-1/3 w-80 h-80 bg-purple-300" />
+        <DecorativeBlob className="top-20 left-10 w-96 h-96 bg-emerald-200" delay={0.0} />
+        <DecorativeBlob className="top-40 right-20 w-[30rem] h-[30rem] bg-teal-200" delay={0.8} />
+        <DecorativeBlob className="bottom-20 left-1/3 w-80 h-80 bg-purple-200" delay={1.2} />
+        <DecorativeBlob className="top-60 left-1/4 w-64 h-64 bg-cyan-200" delay={1.5} />
+        <DecorativeBlob className="bottom-40 right-1/4 w-48 h-48 bg-pink-200" delay={2.0} />
 
         <FloatingShape className="top-32 left-[15%] w-20 h-20" delay={0.2} />
         <FloatingShape className="top-48 right-[20%] w-16 h-16" delay={0.7} />
         <FloatingShape className="bottom-40 left-[25%] w-24 h-24" delay={1.2} />
         <FloatingShape className="bottom-32 right-[15%] w-14 h-14" delay={0.5} />
+        <FloatingShape className="top-64 left-[45%] w-18 h-18" delay={1.8} />
+        <FloatingShape className="top-80 right-[10%] w-12 h-12" delay={2.3} />
 
         <motion.div style={{ opacity: heroOpacity, scale: heroScale }} className="relative z-10 mx-auto max-w-4xl px-4 text-center">
           <motion.div
@@ -130,8 +151,16 @@ export default function LandingPage() {
             className="mb-6"
           >
             <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-1.5 text-sm font-medium text-emerald-700 border border-emerald-200/50 shadow-sm">
-              <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse-glow" />
-              Sua jornada de autocuidado começa aqui
+              <motion.span 
+              className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse-glow" 
+              animate={{ scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+            />
+              <motion.span
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              >Sua jornada de autocuidado começa aqui</motion.span>
             </span>
           </motion.div>
 
@@ -216,10 +245,14 @@ export default function LandingPage() {
 
         <div className="relative z-10 mx-auto max-w-6xl px-4">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 40, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7 }}
+            transition={{ 
+              duration: 0.8, 
+              ease: "easeOut",
+              staggerChildren: 0.1
+            }}
             className="text-center mb-16"
           >
             <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-1.5 text-sm font-medium text-emerald-700 border border-emerald-200/50 mb-4">
@@ -299,36 +332,84 @@ export default function LandingPage() {
       </section>
 
       <section className="relative py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700" />
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-40 h-40 rounded-full bg-white animate-float" />
-          <div className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-white animate-float" style={{ animationDelay: "2s" }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-white/30 animate-pulse-glow" />
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700">
+          <div className="absolute inset-0">
+            <motion.div
+              className="absolute top-10 left-10 w-40 h-40 rounded-full bg-white/10 backdrop-blur-sm"
+              animate={{ 
+                y: [0, -20, 0], 
+                scale: [1, 1.1, 1],
+                opacity: [0.1, 0.2, 0.1]
+              }}
+              transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-white/10 backdrop-blur-sm"
+              animate={{ 
+                y: [0, 30, 0], 
+                scale: [1, 0.9, 1],
+                opacity: [0.1, 0.15, 0.1]
+              }}
+              transition={{ repeat: Infinity, duration: 10, ease: "easeInOut", delay: 2 }}
+            />
+            <motion.div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-white/5 backdrop-blur-sm"
+              animate={{ 
+                scale: [1, 1.2, 1],
+                rotate: [0, 180, 360],
+                opacity: [0.05, 0.15, 0.05]
+              }}
+              transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+            />
+          </div>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 60, scale: 0.8 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          transition={{ 
+            duration: 1, 
+            ease: [0.4, 0, 0.2, 1],
+            staggerChildren: 0.1
+          }}
           className="relative z-10 mx-auto max-w-3xl px-4 text-center"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-white">
+          <motion.h2 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="text-4xl sm:text-5xl font-bold text-white"
+          >
             Pronto para começar?
-          </h2>
-          <p className="mt-4 text-lg text-emerald-100/80 max-w-xl mx-auto">
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.7, ease: "easeOut" }}
+            className="mt-4 text-lg text-emerald-100/80 max-w-xl mx-auto"
+          >
             Cadastre-se grátis e acesse todos os módulos, diário emocional e
             acompanhamento de progresso.
-          </p>
-          <Link
-            href="/register"
-            className="group mt-10 inline-flex items-center gap-2 rounded-2xl bg-white px-8 py-4 text-base font-semibold text-emerald-700 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 active:scale-[0.98]"
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, duration: 0.5, ease: "backOut(1.7)" }}
           >
-            Criar Conta Gratuita
-            <svg className="h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </Link>
+            <Link
+              href="/register"
+              className="group mt-10 inline-flex items-center gap-2 rounded-2xl bg-white px-8 py-4 text-base font-semibold text-emerald-700 shadow-xl hover:shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300"
+            >
+              <span>Criar Conta Gratuita</span>
+              <svg className="h-5 w-5 transition-all group-hover:translate-x-1 group-hover:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+          </motion.div>
         </motion.div>
       </section>
 

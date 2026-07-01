@@ -4,6 +4,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 
+const ERROR_MESSAGES: Record<string, string> = {
+  CredentialsSignin: "Email ou senha incorretos. Verifique e tente novamente.",
+  MissingCSRF: "Sessão expirada. Recarregue a página e tente novamente.",
+  AccessDenied: "Acesso negado.",
+  Configuration: "Erro de configuração. Tente novamente mais tarde.",
+  Verification: "Link de verificação expirado ou já utilizado.",
+};
+
 export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -12,7 +20,11 @@ export default function LoginPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("registered") === "true") setRegistered(true);
-    if (params.get("error")) setError(decodeURIComponent(params.get("error")!));
+    const err = params.get("error");
+    if (err) {
+      setError(ERROR_MESSAGES[err] || "Erro ao fazer login. Tente novamente.");
+      window.history.replaceState({}, "", "/login");
+    }
   }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -34,10 +46,11 @@ export default function LoginPage() {
       if (res?.ok) {
         window.location.href = "/dashboard";
       } else {
-        setError(res?.error || "Email ou senha inválidos");
+        const errKey = res?.error || "";
+        setError(ERROR_MESSAGES[errKey] || "Email ou senha incorretos. Verifique e tente novamente.");
       }
     } catch {
-      setError("Erro de conexão");
+      setError("Erro de conexão. Verifique sua internet.");
     }
     setLoading(false);
   }
@@ -72,11 +85,18 @@ export default function LoginPage() {
               </div>
             )}
             {error && (
-              <div className="rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-100 dark:border-red-900 p-3.5 text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
-                <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <div className="rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-100 dark:border-red-900 p-3.5 text-sm text-red-600 dark:text-red-400 flex items-start gap-2">
+                <svg className="h-4 w-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                {error}
+                <span>
+                  {error}
+                  <br />
+                  <Link href="/register" className="font-semibold underline hover:text-red-500">
+                    Criar conta gratuita
+                  </Link>{" "}
+                  se ainda não tem acesso.
+                </span>
               </div>
             )}
 

@@ -67,19 +67,14 @@ function FloatingDot({ className, delay = 0 }: { className: string; delay?: numb
 
 function TypewriterText({ text, className }: { text: string; className?: string }) {
   return (
-    <span className={className}>
-      {text.split("").map((char, i) => (
-        <motion.span
-          key={i}
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 + i * 0.035, type: "spring", stiffness: 180, damping: 12 }}
-          className="inline-block"
-        >
-          {char === " " ? "\u00A0" : char}
-        </motion.span>
-      ))}
-    </span>
+    <motion.span
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className={className}
+    >
+      {text}
+    </motion.span>
   );
 }
 
@@ -131,20 +126,13 @@ export default function LandingPage() {
         {/* Gradient de fundo suave */}
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/80 via-white to-white dark:from-emerald-950/20 dark:via-zinc-900 dark:to-zinc-900" />
 
-        {/* Blobs decorativos */}
+        {/* Blobs decorativos — reduzido pra mobile */}
         <DecorativeBlob className="top-16 left-[5%] w-[28rem] h-[28rem] bg-emerald-200" delay={0} />
-        <DecorativeBlob className="top-32 right-[8%] w-[24rem] h-[24rem] bg-teal-200" delay={1} />
-        <DecorativeBlob className="bottom-24 left-[20%] w-[20rem] h-[20rem] bg-purple-200" delay={2} />
-        <DecorativeBlob className="top-1/2 right-[25%] w-[16rem] h-[16rem] bg-cyan-200" delay={3} />
+        <DecorativeBlob className="bottom-24 right-[8%] w-[24rem] h-[24rem] bg-teal-200" delay={1} />
 
-        {/* Pontos flutuantes */}
+        {/* Pontos flutuantes — reduzido */}
         <FloatingDot className="top-[20%] left-[12%] w-3 h-3" delay={0.2} />
-        <FloatingDot className="top-[30%] right-[18%] w-2 h-2" delay={0.6} />
-        <FloatingDot className="bottom-[30%] left-[22%] w-4 h-4" delay={1.0} />
-        <FloatingDot className="top-[60%] right-[12%] w-2.5 h-2.5" delay={1.4} />
-        <FloatingDot className="top-[15%] right-[35%] w-2 h-2" delay={1.8} />
-        <FloatingDot className="bottom-[20%] left-[40%] w-3 h-3" delay={2.2} />
-        <FloatingDot className="top-[45%] left-[8%] w-2 h-2" delay={2.6} />
+        <FloatingDot className="bottom-[30%] right-[15%] w-2.5 h-2.5" delay={0.8} />
 
         <motion.div
           style={{ opacity: heroOpacity, y: heroY }}
@@ -249,7 +237,6 @@ export default function LandingPage() {
       <section id="modulos" ref={modulesRef} className="relative py-28">
         <div className="absolute inset-0 bg-gradient-to-b from-white via-emerald-50/30 to-white dark:from-zinc-900 dark:via-emerald-950/10 dark:to-zinc-900" />
         <DecorativeBlob className="top-40 left-0 w-72 h-72 bg-emerald-200/30" />
-        <DecorativeBlob className="bottom-40 right-0 w-96 h-96 bg-purple-200/20" />
 
         <div className="relative z-10 mx-auto max-w-6xl px-5">
           {/* Título da seção */}
@@ -350,18 +337,13 @@ export default function LandingPage() {
           <div className="absolute inset-0">
             <motion.div
               className="absolute top-10 left-10 w-48 h-48 rounded-full bg-white/10 backdrop-blur-sm"
-              animate={{ y: [0, -20, 0], scale: [1, 1.1, 1], opacity: [0.1, 0.2, 0.1] }}
+              animate={{ y: [0, -20, 0], opacity: [0.1, 0.2, 0.1] }}
               transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
             />
             <motion.div
               className="absolute bottom-10 right-10 w-64 h-64 rounded-full bg-white/10 backdrop-blur-sm"
-              animate={{ y: [0, 30, 0], scale: [1, 0.9, 1], opacity: [0.1, 0.15, 0.1] }}
+              animate={{ y: [0, 30, 0], opacity: [0.1, 0.15, 0.1] }}
               transition={{ repeat: Infinity, duration: 10, ease: "easeInOut", delay: 2 }}
-            />
-            <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-white/5"
-              animate={{ scale: [1, 1.3, 1], rotate: [0, 180, 360], opacity: [0.03, 0.1, 0.03] }}
-              transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
             />
           </div>
         </div>

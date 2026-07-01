@@ -212,51 +212,7 @@ export default function JournalDayView() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-      {/* Sidebar: dias anteriores */}
-      <div className="lg:order-1">
-        <div className="sticky top-24">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3 px-1">
-            Páginas
-          </h3>
-          <div className="space-y-1 max-h-[60vh] overflow-y-auto pr-1 scrollbar-thin">
-            {allDays.map((day) => {
-              const isSelected = day.date === selectedKey;
-              const hasEntries = day.entries.length > 0;
-              return (
-                <button
-                  key={day.date}
-                  onClick={() => selectDay(day)}
-                  className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all duration-200 ${
-                    isSelected
-                      ? "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300"
-                      : "hover:bg-zinc-50 dark:hover:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400"
-                  }`}
-                >
-                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
-                    isSelected
-                      ? "bg-emerald-500 text-white"
-                      : hasEntries
-                      ? "bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300"
-                      : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600"
-                  }`}>
-                    {day.date.split("-")[2]}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-medium truncate ${isSelected ? "text-emerald-700 dark:text-emerald-300" : ""}`}>
-                      {day.label}
-                    </p>
-                    <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
-                      {hasEntries ? `${day.entries.length} entrada${day.entries.length > 1 ? "s" : ""}` : "Sem entradas"}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Conteúdo principal */}
+      {/* Conteúdo principal — aparece primeiro no mobile */}
       <div className="lg:order-2">
         {/* Navegação do dia */}
         <div className="flex items-center justify-between mb-6">
@@ -439,6 +395,50 @@ export default function JournalDayView() {
               })
             )}
           </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Sidebar: dias anteriores — aparece depois no mobile */}
+      <div className="lg:order-1">
+        <div className="sticky top-24">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3 px-1">
+            Páginas
+          </h3>
+          <div className="space-y-1 max-h-[60vh] overflow-y-auto pr-1 scrollbar-thin">
+            {allDays.map((day) => {
+              const isSelected = day.date === selectedKey;
+              const hasEntries = day.entries.length > 0;
+              return (
+                <button
+                  key={day.date}
+                  onClick={() => selectDay(day)}
+                  className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all duration-200 ${
+                    isSelected
+                      ? "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300"
+                      : "hover:bg-zinc-50 dark:hover:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400"
+                  }`}
+                >
+                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                    isSelected
+                      ? "bg-emerald-500 text-white"
+                      : hasEntries
+                      ? "bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300"
+                      : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600"
+                  }`}>
+                    {day.date.split("-")[2]}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-medium truncate ${isSelected ? "text-emerald-700 dark:text-emerald-300" : ""}`}>
+                      {day.label}
+                    </p>
+                    <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
+                      {hasEntries ? `${day.entries.length} entrada${day.entries.length > 1 ? "s" : ""}` : "Sem entradas"}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

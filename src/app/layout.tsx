@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+import { Analytics } from "@vercel/analytics/react";
 import SessionProvider from "@/components/SessionProvider";
 import { auth } from "@/lib/auth";
 import "./globals.css";
@@ -67,6 +68,7 @@ export default async function RootLayout({
             },
           }}
         />
+        <Analytics />
       </body>
     </html>
   );

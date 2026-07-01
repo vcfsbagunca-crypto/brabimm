@@ -398,7 +398,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.4, duration: 0.5, ease: "backOut(1.7)" }}
+            transition={{ delay: 0.4, duration: 0.5, ease: "easeOut" }}
           >
             <Link
               href="/register"

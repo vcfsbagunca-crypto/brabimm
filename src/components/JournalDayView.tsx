@@ -75,8 +75,12 @@ export default function JournalDayView() {
   const autoResize = useCallback(() => {
     const el = textareaRef.current;
     if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${el.scrollHeight}px`;
+    el.style.height = "0";
+    const minH = 80;
+    const maxH = 320;
+    const newH = Math.min(Math.max(el.scrollHeight, minH), maxH);
+    el.style.height = `${newH}px`;
+    el.style.overflowY = el.scrollHeight > maxH ? "auto" : "hidden";
   }, []);
 
   useEffect(() => {
@@ -313,7 +317,7 @@ export default function JournalDayView() {
               rows={3}
               className="w-full resize-none overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 p-4 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900 transition-all leading-relaxed"
               placeholder="Escreva livremente sobre seus pensamentos..."
-              style={{ minHeight: "80px", maxHeight: "400px" }}
+              style={{ minHeight: "80px" }}
             />
 
             <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">

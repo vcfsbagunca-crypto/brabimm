@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { validateCsrf } from "@/lib/csrf";
 
 async function checkAccess(userId: string): Promise<boolean> {
   const order = await prisma.order.findFirst({
@@ -9,7 +10,11 @@ async function checkAccess(userId: string): Promise<boolean> {
   return !!order;
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  if (!validateCsrf(req)) {
+    return NextResponse.json({ message: "Requisição inválida" }, { status: 403 });
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ message: "Não autorizado" }, { status: 401 });

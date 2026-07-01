@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { validateCsrf } from "@/lib/csrf";
 
 export async function GET() {
   const session = await auth();
@@ -15,7 +16,11 @@ export async function GET() {
   return NextResponse.json(progress);
 }
 
-export async function DELETE() {
+export async function DELETE(req: NextRequest) {
+  if (!validateCsrf(req)) {
+    return NextResponse.json({ message: "Requisição inválida" }, { status: 403 });
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ message: "Não autorizado" }, { status: 401 });

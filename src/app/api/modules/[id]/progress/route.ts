@@ -1,11 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { validateCsrf } from "@/lib/csrf";
 
 export async function POST(
-  req: Request,
+  req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  if (!validateCsrf(req)) {
+    return NextResponse.json({ message: "Requisição inválida" }, { status: 403 });
+  }
+
   const { id: moduleId } = await context.params;
   const session = await auth();
   if (!session?.user?.id) {

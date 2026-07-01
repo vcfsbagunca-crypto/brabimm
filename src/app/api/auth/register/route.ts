@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { hash } from "bcryptjs";
 import { NextResponse, NextRequest } from "next/server";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { validateCsrf } from "@/lib/csrf";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_NAME = 100;
@@ -10,6 +12,18 @@ const MAX_PASSWORD = 128;
 
 export async function POST(req: NextRequest) {
   try {
+    if (!validateCsrf(req)) {
+      return NextResponse.json({ message: "Requisição inválida" }, { status: 403 });
+    }
+
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(`register:${ip}`, { windowMs: 60_000, maxRequests: 5 });
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { message: "Muitas tentativas. Tente novamente em 1 minuto." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((rate.resetAt - Date.now()) / 1000)) } }
+      );
+    }
     const ct = req.headers.get("content-type") || "";
     const isForm = ct.includes("application/x-www-form-urlencoded");
 

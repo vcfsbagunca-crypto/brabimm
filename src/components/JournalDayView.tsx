@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -63,6 +63,7 @@ function MoodBadge({ mood }: { mood: string }) {
 
 export default function JournalDayView() {
   const router = useRouter();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [content, setContent] = useState("");
   const [mood, setMood] = useState("");
   const [saving, setSaving] = useState(false);
@@ -70,6 +71,17 @@ export default function JournalDayView() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [allDays, setAllDays] = useState<DayPage[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const autoResize = useCallback(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, []);
+
+  useEffect(() => {
+    autoResize();
+  }, [content, autoResize]);
 
   const todayKey = getDayKey(new Date());
   const selectedKey = getDayKey(selectedDate);
@@ -292,11 +304,16 @@ export default function JournalDayView() {
             </div>
 
             <textarea
+              ref={textareaRef}
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={4}
-              className="w-full resize-none rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 p-4 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900 transition-all"
+              onChange={(e) => {
+                setContent(e.target.value);
+                autoResize();
+              }}
+              rows={3}
+              className="w-full resize-none overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 p-4 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900 transition-all leading-relaxed"
               placeholder="Escreva livremente sobre seus pensamentos..."
+              style={{ minHeight: "80px", maxHeight: "400px" }}
             />
 
             <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -379,12 +396,12 @@ export default function JournalDayView() {
                       <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
                         Exercício do diário
                       </p>
-                      <div className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                      <div className="whitespace-pre-wrap break-words text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
                         {entry.content.replace(/^## Exercício:.*\n\n/, "")}
                       </div>
                     </div>
                   ) : (
-                    <div className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                    <div className="whitespace-pre-wrap break-words text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
                       {entry.content}
                     </div>
                   )}

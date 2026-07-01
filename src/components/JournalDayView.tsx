@@ -382,8 +382,8 @@ export default function JournalDayView() {
                 const displayContent = isExercise
                   ? entry.content.replace(/^## Exercício:.*\n\n/, "")
                   : entry.content;
-                const isLong = displayContent.length > 200;
-                const preview = isLong ? displayContent.slice(0, 200) + "..." : displayContent;
+                const isLong = displayContent.length > 30;
+                const preview = isLong ? displayContent.slice(0, 30) + "..." : displayContent;
 
                 return (
                   <motion.div

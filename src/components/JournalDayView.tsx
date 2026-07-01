@@ -71,6 +71,7 @@ export default function JournalDayView() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [allDays, setAllDays] = useState<DayPage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const autoResize = useCallback(() => {
     const el = textareaRef.current;
@@ -375,42 +376,67 @@ export default function JournalDayView() {
                 </p>
               </motion.div>
             ) : (
-              entries.map((entry, idx) => (
-                <motion.div
-                  key={entry.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ delay: idx * 0.05 }}
-                  className="rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-sm"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">
-                      {new Date(entry.createdAt).toLocaleTimeString("pt-BR", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                    {entry.mood && entry.mood !== "exercise" && (
-                      <MoodBadge mood={entry.mood} />
-                    )}
-                  </div>
-                  {entry.content.startsWith("## Exercício:") ? (
-                    <div className="rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 p-3 border border-emerald-100 dark:border-emerald-900">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
-                        Exercício do diário
-                      </p>
-                      <div className="whitespace-pre-wrap break-words text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                        {entry.content.replace(/^## Exercício:.*\n\n/, "")}
+              entries.map((entry, idx) => {
+                const isExpanded = expandedIds.has(entry.id);
+                const isExercise = entry.content.startsWith("## Exercício:");
+                const displayContent = isExercise
+                  ? entry.content.replace(/^## Exercício:.*\n\n/, "")
+                  : entry.content;
+                const isLong = displayContent.length > 200;
+                const preview = isLong ? displayContent.slice(0, 200) + "..." : displayContent;
+
+                return (
+                  <motion.div
+                    key={entry.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-sm"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">
+                        {new Date(entry.createdAt).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                      {entry.mood && entry.mood !== "exercise" && (
+                        <MoodBadge mood={entry.mood} />
+                      )}
+                    </div>
+                    {isExercise ? (
+                      <div className="rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 p-3 border border-emerald-100 dark:border-emerald-900">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
+                          Exercício do diário
+                        </p>
+                        <div className="whitespace-pre-wrap break-words text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                          {isExpanded || !isLong ? displayContent : preview}
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="whitespace-pre-wrap break-words text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                      {entry.content}
-                    </div>
-                  )}
-                </motion.div>
-              ))
+                    ) : (
+                      <div className="whitespace-pre-wrap break-words text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                        {isExpanded || !isLong ? displayContent : preview}
+                      </div>
+                    )}
+                    {isLong && (
+                      <button
+                        onClick={() => {
+                          setExpandedIds((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(entry.id)) next.delete(entry.id);
+                            else next.add(entry.id);
+                            return next;
+                          });
+                        }}
+                        className="mt-2 text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:underline"
+                      >
+                        {isExpanded ? "Ver menos" : "Ver mais"}
+                      </button>
+                    )}
+                  </motion.div>
+                );
+              })
             )}
           </AnimatePresence>
         </div>
